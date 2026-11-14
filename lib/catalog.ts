@@ -179,3 +179,32 @@ export const toCard = (p: Product): CardProduct => ({
   createdAt: p.createdAt,
   hover: p.gallery.find((g) => g !== p.image),
 });
+
+const strip = (h: string) =>
+  h
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&#39;|&rsquo;/g, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;/g, '"')
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Short feature bullets from the first list in the description ("24V DC power: ..." -> "24V DC power"). */
+export function extractHighlights(html: string, max = 5): string[] {
+  const list = html.match(/<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] ?? "";
+  const items = [...list.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map((m) => {
+    const bold = m[1].match(/<(strong|b)>([\s\S]*?)<\/\1>/i)?.[2];
+    const text = strip(bold ?? m[1]).replace(/[:：]\s*$/, "");
+    return text.length > 70 ? text.slice(0, 68).replace(/\s\S*$/, "") + "…" : text;
+  });
+  return items.filter((t) => t.length > 2).slice(0, max);
+}
+
+/** Key/value rows from tables in the description, if the supplier included a spec table. */
+export function extractSpecs(html: string, max = 14): [string, string][] {
+  const rows = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)]
+    .map((m) => [...m[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((c) => strip(c[1])))
+    .filter((c) => c.length === 2 && c[0] && c[1] && c[0].length < 40 && c[1].length < 120) as [string, string][];
+  return rows.slice(0, max);
+}
