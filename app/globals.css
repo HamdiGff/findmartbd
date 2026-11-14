@@ -361,7 +361,7 @@ ul {
 .hsearch__cat {
   appearance: none;
   flex: none;
-  max-width: 200px;
+  width: auto;
   height: auto;
   min-height: 44px;
   line-height: 1.3;

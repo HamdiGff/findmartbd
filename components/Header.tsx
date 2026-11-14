@@ -57,7 +57,7 @@ function SearchBox() {
         <option value="">All categories</option>
         {CATEGORIES.map((c) => (
           <option key={c.slug} value={c.slug}>
-            {c.name}
+            {c.short === "Audio" ? "Earbuds" : c.short}
           </option>
         ))}
       </select>
