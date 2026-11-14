@@ -135,12 +135,18 @@ export function Header({ meta }: { meta: CatMeta[] }) {
     setMega(false);
   }, [pathname]);
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 40);
+    const on = () => {
+      setScrolled(window.scrollY > 40);
+      const el = document.querySelector(".header");
+      if (el) document.documentElement.style.setProperty("--hb", `${Math.round(el.getBoundingClientRect().bottom)}px`);
+    };
     on();
     window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
     const id = setInterval(() => setNotice((n) => (n + 1) % NOTICES.length), 4500);
     return () => {
       window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
       clearInterval(id);
     };
   }, []);

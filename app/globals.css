@@ -2188,7 +2188,7 @@ ul {
 /* gallery */
 .gal {
   position: sticky;
-  top: 148px;
+  top: calc(var(--hb, 140px) + 16px);
   display: grid;
   gap: 12px;
 }
@@ -2705,7 +2705,8 @@ body:has(.stickybuy[data-show="true"]) .fab--right {
 /* section tabs */
 .ptabs {
   position: sticky;
-  top: 150px;
+  top: calc(var(--hb, 140px) + 8px);
+  box-shadow: 0 -9px 0 var(--bg);
   z-index: 20;
   display: flex;
   gap: 4px;
@@ -2882,7 +2883,7 @@ body:has(.stickybuy[data-show="true"]) .fab--right {
 }
 .pdetail__side {
   position: sticky;
-  top: 230px;
+  top: calc(var(--hb, 140px) + 84px);
   display: grid;
   gap: 16px;
 }
@@ -3045,7 +3046,7 @@ body:has(.stickybuy[data-show="true"]) .fab--right {
     gap: 8px;
   }
   .ptabs {
-    top: 112px;
+    top: var(--hb, 112px);
     margin-left: -14px;
     margin-right: -14px;
     border-radius: 0;
