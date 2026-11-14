@@ -53,7 +53,7 @@ const STAGES: { slug: string; ghost: string; headline: string; blurb: string; le
     ghost: "Solar",
     headline: "Load-shedding, handled.",
     blurb: "MPPT controllers, DC breakers and power stations to keep lights, Wi-Fi and fans running.",
-    lead: /mppt|power station|cooker/i,
+    lead: /power station|mppt/i,
   },
   {
     slug: "creator-gear",

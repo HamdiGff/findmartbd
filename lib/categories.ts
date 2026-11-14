@@ -61,7 +61,7 @@ export const CATEGORIES: CategoryDef[] = [
     icon: "sun",
     tint: "#FFE9A6",
     accent: "#A15C00",
-    match: /solar|mppt|charge controller|power station|circuit breaker|\bips\b|inverter|lifepo4|dc breaker|surge/i,
+    match: /(?<!3d crystal ball[ -]*)(?<!ball[ -]*)\bsolar(?! system)|mppt|charge controller|power station|circuit breaker|\bips\b|inverter|lifepo4|dc breaker|surge/i,
   },
   {
     slug: "creator-gear",
