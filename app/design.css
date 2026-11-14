@@ -4,6 +4,9 @@
    Brand yellow is reserved for actions. */
 
 /* ---------- Type and shared bits ---------- */
+body {
+  overflow-x: clip;
+}
 .disp {
   font-weight: 800;
   font-stretch: 125%;
@@ -452,9 +455,10 @@
   border-bottom: 1px solid var(--line);
   font-weight: 800;
   font-stretch: 125%;
-  font-size: clamp(26px, 3.9vw, 54px);
-  line-height: 1.08;
+  font-size: clamp(22px, 3vw, 42px);
+  line-height: 1.12;
   letter-spacing: -0.035em;
+  white-space: nowrap;
   color: #a9b8b1;
   transition: color 0.2s;
 }
@@ -2021,6 +2025,34 @@ a.ft__line:hover {
   }
 }
 @media (max-width: 640px) {
+  .hd__row {
+    gap: 2px;
+  }
+  .hd__acts {
+    gap: 0;
+  }
+  .hd__acts a[aria-label="Wishlist"] {
+    display: none;
+  }
+  .hd__cart {
+    margin-left: 4px;
+    padding: 0 13px;
+    height: 44px;
+  }
+  .hd__logo .lg {
+    gap: 8px;
+  }
+  .hd__logo .lg svg {
+    width: 34px;
+    height: 34px;
+  }
+  .hd__logo .lg__name {
+    font-size: 18px;
+  }
+  .ai__row {
+    font-size: clamp(20px, 6.2vw, 28px);
+    gap: 12px;
+  }
   .hd__strip-r {
     display: none;
   }
