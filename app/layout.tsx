@@ -1,35 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/bricolage-grotesque";
-import "@fontsource/hind-siliguri/400.css";
-import "@fontsource/hind-siliguri/500.css";
-import "@fontsource/hind-siliguri/600.css";
+import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
-import { CartProvider } from "@/components/Cart";
+import { CartProvider } from "@/components/CartProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CartDrawer } from "@/components/CartDrawer";
+import { Floating } from "@/components/Floating";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://findmartbd.com"),
-  title: "FindMart BD: gadgets and everyday tech with cash on delivery",
+  title: {
+    default: "FindMart — Gadgets & Electronics with Cash on Delivery in Bangladesh",
+    template: "%s | FindMart",
+  },
   description:
-    "Shop earbuds, smart watches, power banks, microphones and home gadgets at fair prices. Cash on delivery across all 64 districts of Bangladesh.",
-  // Design preview with sample products: keep it out of Google until launch.
+    "Shop earbuds, smart watches, power banks, microphones, solar backup and home gadgets at fair prices. Cash on delivery across all 64 districts of Bangladesh.",
+  // Not launched yet: keep out of search engines until the store is ready.
   robots: { index: false, follow: false },
 };
 
-export const viewport: Viewport = {
-  themeColor: "#0B5D4B",
-};
+export const viewport: Viewport = { themeColor: "#FFB800" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <a className="skip-link" href="#main">Skip to products</a>
+        <a className="skiplink" href="#main">
+          Skip to content
+        </a>
         <CartProvider>
           <Header />
           <main id="main">{children}</main>
           <Footer />
+          <CartDrawer />
+          <Floating />
         </CartProvider>
       </body>
     </html>

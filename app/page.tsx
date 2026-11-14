@@ -1,223 +1,265 @@
-import { PriceTag, ProductCard } from "@/components/ProductCard";
-import { Shelf } from "@/components/Shelf";
-import { ArrowIcon, CashIcon, ReturnIcon, ShieldIcon, TruckIcon, WhatsappIcon } from "@/components/Icons";
-import {
-  SITE,
-  brands,
-  categories,
-  categoryUrl,
-  creatorGear,
-  heroShelf,
-  newArrivals,
-  productUrl,
-  solarPick,
-  taka,
-  underBudget,
-} from "@/lib/catalog";
+import Link from "next/link";
+import { HeroSlider, type Slide } from "@/components/HeroSlider";
+import { ProductRow } from "@/components/ProductRow";
+import { ProductCard } from "@/components/ProductCard";
+import { Arrow, CategoryIcon } from "@/components/Icons";
+import { CATEGORIES } from "@/lib/categories";
+import { getAllProducts, toCard, type Product } from "@/lib/catalog";
+import { taka } from "@/lib/format";
 
-const promises = [
-  { icon: <CashIcon />, title: "Cash on delivery", text: "Pay the rider after you check the parcel." },
-  { icon: <TruckIcon />, title: "All 64 districts", text: "Dhaka in 1 to 2 days, elsewhere in 2 to 4." },
-  { icon: <ShieldIcon />, title: "7-day warranty", text: "Faulty on arrival? We replace it." },
-  { icon: <ReturnIcon />, title: "Easy returns", text: "Request a return from your account." },
-];
+export const revalidate = 3600;
 
-const heroLabels = ["QCY MeloBuds N65", "Titan Urban Edge", "Hoco DS89 speaker"];
+const pick = (list: Product[], re: RegExp) => list.find((p) => re.test(p.name)) ?? list[0];
 
-const steps = [
-  { title: "Place your order", text: "Add products to your cart and check out with your name, phone and address. No advance payment." },
-  { title: "We call to confirm", text: "Our team calls within a few hours to confirm the order and the delivery charge." },
-  { title: "Check it, then pay", text: "The courier brings the parcel to your door. Open it, check it, and pay in cash." },
-];
+export default async function Home() {
+  const all = await getAllProducts();
+  const by = (slug: string) => all.filter((p) => p.category === slug);
+  const minPrice = (slug: string) => Math.min(...by(slug).map((p) => p.price));
 
-export default function Home() {
+  const audio = by("earbuds-headphones");
+  const smart = by("smart-watches");
+  const creator = by("creator-gear");
+  const power = by("power-charging");
+  const solar = by("solar-power-backup");
+
+  const slides: Slide[] = [
+    audio.length && {
+      kicker: "New in audio",
+      title: "Hear more. Hear less noise.",
+      text: "Active noise cancelling earbuds from QCY, CMF, Acefast and Hoco, delivered with cash on delivery.",
+      href: "/category/earbuds-headphones",
+      cta: "Shop earbuds",
+      ...slideFrom(pick(audio, /anc|melobuds|cmf/i)),
+      theme: "night" as const,
+    },
+    smart.length && {
+      kicker: "Smart watches",
+      title: "Calls, steps and sleep on your wrist.",
+      text: "Bluetooth calling, AMOLED screens and week-long battery life, starting at a price that makes sense.",
+      href: "/category/smart-watches",
+      cta: "Shop smart watches",
+      ...slideFrom(pick(smart, /calling|amoled|hoco y4/i)),
+      theme: "ocean" as const,
+    },
+    creator.length && {
+      kicker: "For creators",
+      title: "Studio sound from your bedroom.",
+      text: "USB, XLR and wireless mics for YouTube, Facebook Live, gaming and online classes.",
+      href: "/category/creator-gear",
+      cta: "Shop creator gear",
+      ...slideFrom(pick(creator, /fifine k|condenser|wireless mic/i)),
+      theme: "plum" as const,
+    },
+  ].filter(Boolean) as Slide[];
+
+  const sideA = power.length ? pick(power, /power bank/i) : null;
+  const sideB = solar.length ? pick(solar, /mppt|power station|cooker/i) : null;
+
+  const tiles = ["smart-watches", "earbuds-headphones", "power-charging", "creator-gear", "solar-power-backup", "home-kitchen"]
+    .map((slug) => CATEGORIES.find((c) => c.slug === slug)!)
+    .map((c) => ({ ...c, image: pick(by(c.slug), /./)?.image, from: minPrice(c.slug), count: by(c.slug).length }))
+    .filter((c) => c.count > 0);
+
+  const budget = all.filter((p) => p.price <= 999 && p.stock > 0).slice(0, 10);
+  const studioPicks = creator.slice(0, 4);
+
   return (
     <>
-      {/* Hero: products on a shop shelf, each with a market price tag */}
       <section className="hero">
-        <div className="wrap hero__inner">
-          <div className="hero__copy">
-            <h1>Good gadgets at fair prices. Pay when they reach your door.</h1>
-            <p className="hero__lead">
-              Earbuds, watches, power banks, mics and home gadgets from Hoco, QCY, Baseus, Fifine and more, delivered to
-              all 64 districts.
-            </p>
-            <div className="hero__cta">
-              <a className="btn btn--primary" href={SITE + "/shop/?sort=new"}>
-                Shop new arrivals
-              </a>
-              <a className="btn btn--ghost" href="#categories">
-                Browse categories
-              </a>
-            </div>
-            <p className="hero__proof">1,300+ products in stock, all with a 7-day warranty.</p>
-          </div>
-
-          <div className="hero__stage" aria-label="Featured products">
-            {heroShelf.map((p, i) => (
-              <a key={p.slug} href={productUrl(p.slug)} className={`plinth plinth--${i + 1}`}>
+        <div className="wrap hero__grid">
+          <HeroSlider slides={slides} />
+          <div className="hero__side">
+            {sideA && (
+              <Link href={`/product/${sideA.slug}`} className="hcard hcard--sun">
+                <div>
+                  <span className="hcard__kicker">Never run out</span>
+                  <h2>Power banks and fast chargers</h2>
+                  <span className="hcard__from">From {taka(minPrice("power-charging"))}</span>
+                </div>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.image} alt={p.name} width={360} height={360} />
-                <span className="plinth__tag">
-                  <span className="plinth__string" aria-hidden />
-                  <PriceTag price={p.price} size="lg" />
-                </span>
-                <span className="plinth__name">{heroLabels[i]}</span>
-              </a>
-            ))}
-            <div className="hero__board" aria-hidden />
+                <img src={sideA.image} alt={sideA.name} width={220} height={220} />
+              </Link>
+            )}
+            {sideB && (
+              <Link href="/category/solar-power-backup" className="hcard hcard--mint">
+                <div>
+                  <span className="hcard__kicker">Load-shedding ready</span>
+                  <h2>Solar and power backup</h2>
+                  <span className="hcard__from">From {taka(minPrice("solar-power-backup"))}</span>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={sideB.image} alt={sideB.name} width={220} height={220} />
+              </Link>
+            )}
           </div>
         </div>
       </section>
 
-      <section className="promises" aria-label="Our promises">
-        <div className="wrap promises__grid">
-          {promises.map((x) => (
-            <div key={x.title} className="promise">
-              <span className="promise__icon">{x.icon}</span>
-              <div>
-                <h2>{x.title}</h2>
-                <p>{x.text}</p>
+      <section className="block">
+        <div className="wrap">
+          <div className="tiles">
+            {tiles.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/category/${c.slug}`}
+                className="tile"
+                style={{ ["--tint" as string]: c.tint, ["--acc" as string]: c.accent }}
+              >
+                <span className="tile__img">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" width={200} height={200} loading="lazy" />
+                </span>
+                <span className="tile__body">
+                  <span className="tile__ic">
+                    <CategoryIcon name={c.icon} size={20} />
+                  </span>
+                  <strong>{c.name}</strong>
+                  <small>{c.blurb}</small>
+                  <span className="tile__from">From {taka(c.from)}</span>
+                  <span className="tile__btn">
+                    Shop now <Arrow size={15} />
+                  </span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="block">
+        <div className="wrap">
+          <div className="block__head">
+            <h2>Browse all categories</h2>
+            <Link href="/shop" className="seeall">
+              See all products <Arrow size={16} />
+            </Link>
+          </div>
+          <div className="chips">
+            {CATEGORIES.map((c) => {
+              const first = by(c.slug)[0];
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/category/${c.slug}`}
+                  className="chip"
+                  style={{ ["--tint" as string]: c.tint }}
+                >
+                  <span className="chip__txt">
+                    <b>{c.name}</b>
+                    <small>{by(c.slug).length} items</small>
+                  </span>
+                  {first && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={first.image} alt="" width={56} height={56} loading="lazy" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <ProductRow title="New arrivals" href="/shop?sort=new" products={all.slice(0, 12).map(toCard)} />
+
+      {studioPicks.length === 4 && (
+        <section className="block">
+          <div className="wrap">
+            <div className="showcase">
+              <div className="showcase__head">
+                <h2>Creator Studio</h2>
+                <p>Microphones and gear for clear sound on every video and live stream</p>
+              </div>
+              <Link href="/category/creator-gear" className="showcase__cta">
+                Explore the studio <Arrow size={18} />
+              </Link>
+              <div className="showcase__stage">
+                {studioPicks.map((p, n) => (
+                  <Link key={p.slug} href={`/product/${p.slug}`} className={`podium podium--${n + 1}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.image} alt={p.name} width={260} height={260} loading="lazy" />
+                    <span className="podium__label">
+                      <span className="podium__name">{shortName(p.name)}</span>
+                      <b>{taka(p.price)}</b>
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section" id="categories">
-        <div className="wrap">
-          <div className="section__head">
-            <h2>Shop by category</h2>
-            <a className="link-more" href={SITE + "/shop/"}>
-              See all products <ArrowIcon size={18} />
-            </a>
           </div>
-          <div className="cats">
-            {categories.map((c) => (
-              <a key={c.slug} href={categoryUrl(c.slug)} className="cat">
-                <span className="cat__text">
-                  <strong>{c.name}</strong>
-                  <small>{c.note}</small>
+        </section>
+      )}
+
+      <ProductRow title="Earbuds & headphones" href="/category/earbuds-headphones" products={audio.slice(0, 12).map(toCard)} />
+      <ProductRow title="Smart watches" href="/category/smart-watches" products={smart.slice(0, 12).map(toCard)} />
+
+      {sideB && (
+        <section className="block">
+          <div className="wrap">
+            <Link href="/category/solar-power-backup" className="banner">
+              <div className="banner__copy">
+                <span className="banner__kicker">Solar &amp; power backup</span>
+                <h2>Keep the lights on through load-shedding</h2>
+                <p>MPPT charge controllers, portable power stations, DC breakers and solar-ready appliances.</p>
+                <span className="btn btn--brand btn--lg">
+                  Shop solar <Arrow size={18} />
                 </span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.image} alt="" loading="lazy" width={160} height={160} />
-              </a>
-            ))}
+              </div>
+              <div className="banner__art">
+                {solar.slice(0, 3).map((p) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={p.slug} src={p.image} alt="" width={220} height={220} loading="lazy" />
+                ))}
+              </div>
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="section">
-        <div className="wrap">
-          <div className="section__head">
-            <div>
-              <h2>New this week</h2>
-              <p className="section__sub">Fresh stock that landed in the last few days.</p>
+      <ProductRow title="Power banks & chargers" href="/category/power-charging" products={power.slice(0, 12).map(toCard)} />
+
+      {budget.length > 0 && (
+        <section className="block">
+          <div className="wrap">
+            <div className="block__head">
+              <h2>Great finds under {taka(999)}</h2>
+              <Link href="/shop?max=999" className="seeall">
+                See all <Arrow size={16} />
+              </Link>
+            </div>
+            <div className="pgrid pgrid--5">
+              {budget.map((p) => (
+                <ProductCard key={p.slug} p={toCard(p)} />
+              ))}
             </div>
           </div>
-          <Shelf products={newArrivals} label="new arrivals" />
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="studio">
-        <div className="wrap studio__inner">
-          <div className="studio__copy">
-            <h2>Sound like a studio from your bedroom</h2>
-            <p>
-              USB and wireless microphones for YouTube, Facebook Live, gaming and online classes. Plug in, open your app,
-              start recording.
-            </p>
-            <a className="btn btn--marigold" href={categoryUrl("creator-gear")}>
-              Shop creator gear
-            </a>
-          </div>
-          <div className="studio__grid">
-            {creatorGear.map((p) => (
-              <ProductCard key={p.slug} product={p} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
+      <section className="block">
         <div className="wrap">
-          <div className="section__head">
-            <div>
-              <h2>Under {taka(1500)}</h2>
-              <p className="section__sub">Small things that make every day easier.</p>
-            </div>
-            <a className="link-more" href={SITE + "/shop/?max=1500"}>
-              See more under {taka(1500)} <ArrowIcon size={18} />
-            </a>
+          <div className="block__head">
+            <h2>Top brands</h2>
           </div>
-          <div className="grid">
-            {underBudget.map((p) => (
-              <ProductCard key={p.slug} product={p} />
-            ))}
+          <div className="brands">
+            {["Hoco", "QCY", "Baseus", "Anker", "Joyroom", "Fifine", "Maono", "Titan", "Fastrack", "Xiaomi", "Ugreen", "Awei"].map(
+              (b) => (
+                <Link key={b} href={`/search?q=${encodeURIComponent(b)}`} className="brand">
+                  {b}
+                </Link>
+              ),
+            )}
           </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="wrap">
-          <a className="solar" href={productUrl(solarPick.slug)}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={solarPick.image} alt={solarPick.name} loading="lazy" width={520} height={520} />
-            <div className="solar__copy">
-              <h2>Cook straight from a 24V solar battery</h2>
-              <p>
-                The GearUP DC induction cooker runs on your solar system&apos;s battery bank, so you can cook through
-                load-shedding without an inverter.
-              </p>
-              <span className="solar__price">
-                <PriceTag price={solarPick.price} size="lg" />
-                <span className="solar__go">
-                  See the cooker <ArrowIcon size={18} />
-                </span>
-              </span>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <section className="section how">
-        <div className="wrap">
-          <h2 className="how__title">How ordering works</h2>
-          <ol className="steps">
-            {steps.map((s) => (
-              <li key={s.title} className="step">
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="section brands" aria-label="Brands we carry">
-        <div className="wrap">
-          <h2 className="brands__title">Brands we carry</h2>
-          <ul className="brands__list">
-            {brands.map((b) => (
-              <li key={b}>
-                <a href={`${SITE}/brand/${b.toLowerCase()}/`}>{b}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="help">
-        <div className="wrap help__inner">
-          <div>
-            <h2>Not sure which one to buy?</h2>
-            <p>Message us on WhatsApp with what you need and your budget. We reply with two or three good options.</p>
-          </div>
-          <a className="btn btn--wa" href="https://wa.me/8801757756651">
-            <WhatsappIcon /> Chat on WhatsApp
-          </a>
         </div>
       </section>
     </>
   );
+}
+
+function slideFrom(p: Product) {
+  return { image: p.image, price: p.price, name: shortName(p.name) };
+}
+
+function shortName(name: string) {
+  const n = name.split(/\s[-–|]\s|[,(]/)[0].trim();
+  return n.length > 34 ? n.slice(0, 32).trim() + "…" : n;
 }

@@ -1,87 +1,181 @@
-// Temporary sample catalog for the homepage design.
-// Real products will come from the Dropshop feed once the backend is built.
+import "server-only";
+import { unstable_cache } from "next/cache";
+import { categorize } from "./categories";
 
-export const SITE = "https://findmartbd.com";
-const IMG = "https://dropshop.com.bd/uploads/";
+// Live catalog from Dropshop's public storefront feed.
+// The list is cached for an hour, so the site keeps prices and stock fresh
+// without calling Dropshop on every page view.
+
+const FEED = "https://dropshop.com.bd/api/v1/storefront/products";
+const ORIGIN = "https://dropshop.com.bd";
 
 export type Product = {
+  id: string;
   slug: string;
   name: string;
+  sku: string;
   brand: string;
+  category: string;
   price: number;
+  stock: number;
   image: string;
-  isNew?: boolean;
+  gallery: string[];
+  warranty: string;
+  createdAt: string;
 };
 
-const p = (slug: string, name: string, brand: string, price: number, file: string, isNew = false): Product => ({
-  slug,
-  name,
-  brand,
-  price,
-  image: IMG + file,
-  isNew,
-});
+export type ProductDetail = Product & { description: string };
 
-export const newArrivals: Product[] = [
-  p("qcy-melobuds-n65-anc-black", "MeloBuds N65 ANC earbuds, black", "QCY", 4000, "1794125656-2c60308e.jpeg", true),
-  p("hoco-y41-smart-watch", "Y41 smart watch with Bluetooth calling", "Hoco", 2649, "1794213820-31e5ff07.png", true),
-  p("cmf-buds-neo-blue", "CMF Buds Neo true wireless earbuds, blue", "Nothing", 4369, "1794142555-b8c09548.jpg", true),
-  p("qcy-pulse-pb10h", "Pulse PB10H 22.5W power bank, 10000mAh", "QCY", 2249, "1794138431-fedae552.jpeg", true),
-  p("acefast-w6-tws", "W6 TWS earbuds", "Acefast", 2289, "1794211950-c7880b43.jpeg", true),
-  p("cudy-wr3000-wifi6", "WR3000 AX3000 dual-band Wi-Fi 6 router", "Cudy", 5500, "1794209266-1cc36e52.jpeg", true),
-  p("qcy-urban-gs-smart-watch", "Urban GS smart watch, black", "QCY", 6889, "1794131117-dbc2c470.jpeg", true),
-  p("baseus-nomos-nt11", "Nomos NT11 35W power bank, 10000mAh", "Baseus", 4029, "1793796133-b4756731.jpeg", true),
+type Raw = {
+  id: string;
+  name: string;
+  slug: string;
+  sku: string;
+  description?: string;
+  min_price: number;
+  max_price: number;
+  suggested_price: number;
+  stock: number;
+  thumbnail: string;
+  gallery: string[] | null;
+  warranty_value: number;
+  warranty_unit: string;
+  status: string;
+  created_at: string;
+};
+
+/** Selling price rule: Dropshop's suggested price + 15%, ending in 9, kept inside Dropshop's allowed range. */
+export function sellingPrice(r: Pick<Raw, "suggested_price" | "min_price" | "max_price">): number {
+  const target = Math.ceil((r.suggested_price * 1.15) / 10) * 10 - 1;
+  return Math.max(r.min_price, Math.min(r.max_price, target));
+}
+
+const KNOWN_BRANDS = [
+  "Hoco", "QCY", "Baseus", "Anker", "Joyroom", "Fifine", "Maono", "Titan", "Fastrack", "Xiaomi", "Ugreen", "Kemei",
+  "Awei", "Lenovo", "Valdus", "Colmi", "Havit", "Vention", "Mcdodo", "Acefast", "Boya", "Ulanzi", "Jmary", "Geeoo",
+  "GearUP", "Lexar", "Remax", "Neepho", "Ruijie", "Cudy", "TP-Link", "Tenda", "Philips", "Inphic", "Jisulife",
+  "Momax", "CMF", "Realme", "Haylou", "Kieslect", "Soundpeats", "Edifier", "Lavvi", "Mibro", "Amazfit", "Tomzn",
 ];
 
-export const creatorGear: Product[] = [
-  p("fifine-k678", "K678 USB studio condenser microphone", "Fifine", 7200, "1793707080-34e04d1c.jpeg"),
-  p("fifine-amplitank-tank3", "AmpliTank Tank3 USB/XLR dynamic mic", "Fifine", 8000, "1793706785-244b6877.jpeg"),
-  p("maono-dgm20s", "DGM20S USB gaming mic with noise cancelling", "Maono", 5500, "1793706130-ea151be5.jpg"),
-  p("maono-wave-t1-mini", "Wave T1 Mini wireless microphone", "Maono", 4000, "1793705014-09ede6cc.jpeg"),
-];
+function brandOf(name: string): string {
+  const lower = name.toLowerCase();
+  for (const b of KNOWN_BRANDS) {
+    const re = new RegExp(`(^|[^a-z])${b.toLowerCase().replace("-", "\\-")}([^a-z]|$)`);
+    if (re.test(lower)) return b;
+  }
+  return "";
+}
 
-export const underBudget: Product[] = [
-  p("geeoo-c22-charger", "C22 22.5W fast Type-C charger set", "Geeoo", 689, "1790246183-0c8ea3a7.png"),
-  p("rgb-neck-fan", "Rechargeable neck fan with RGB light", "FindMart pick", 809, "1793431006-71ce6164.jpeg"),
-  p("g200-magnetic-speaker", "G200 magnetic Bluetooth speaker", "FindMart pick", 850, "1793432405-52f4ee7c.jpeg"),
-  p("lenovo-hd103-pro", "HD103 Pro Bluetooth speaker, white", "Lenovo", 1139, "1793631397-2929afe5.jpg"),
-  p("neepho-np-c01", "NP-C01 phone cooling fan", "NeePho", 1209, "1791348911-04936e7d.jpeg"),
-  p("kemei-km-2273", "KM-2273 professional hair clipper", "Kemei", 1439, "wp-402570-3c808d65ec.png"),
-  p("t15-handheld-fan", "T-15 handheld mini fan", "FindMart pick", 1439, "1793430292-e0c1bde9.png"),
-  p("kemei-km-max5090", "KM-MAX5090 hair clipper for men", "Kemei", 1499, "wp-387711-8b1a156322.webp"),
-];
+const img = (path: string) => (path?.startsWith("http") ? path : ORIGIN + path);
 
-export const heroShelf: Product[] = [
-  newArrivals[0],
-  p("titan-urban-edge-olive", "Urban Edge olive dial leather watch", "Titan", 4829, "wp-229214-baeff8f8bf.jpg"),
-  p("hoco-ds89-speaker", "DS89 portable RGB speaker", "Hoco", 4400, "1791439440-533485b3.jpg"),
-];
+function toProduct(r: Raw): Product {
+  return {
+    id: r.id,
+    slug: r.slug,
+    name: r.name.replace(/\s+/g, " ").trim(),
+    sku: r.sku,
+    brand: brandOf(r.name),
+    category: categorize(r.name),
+    price: sellingPrice(r),
+    stock: r.stock,
+    image: img(r.thumbnail),
+    gallery: (r.gallery ?? []).map(img),
+    warranty: r.warranty_value ? `${r.warranty_value} ${r.warranty_unit}` : "",
+    createdAt: r.created_at,
+  };
+}
 
-export const solarPick = p(
-  "gearup-dc-induction-cooker",
-  "GearUP DC induction cooker, 24V 1000W",
-  "GearUP",
-  12000,
-  "1794638966-e104ba46.jpeg",
-  true,
+async function fetchPage(page: number, limit: number) {
+  const res = await fetch(`${FEED}?page=${page}&limit=${limit}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Feed page ${page} failed: ${res.status}`);
+  const json = await res.json();
+  return json.data as { items: Raw[]; total: number };
+}
+
+const cachedCatalog = unstable_cache(
+  async (): Promise<Product[]> => {
+    // Throws on failure so an empty result is never cached.
+    const limit = 100;
+    const first = await fetchPage(1, limit);
+    const pages = Math.ceil(first.total / limit);
+    const rest = await Promise.all(Array.from({ length: pages - 1 }, (_, i) => fetchPage(i + 2, limit)));
+    const raw = [first, ...rest].flatMap((p) => p.items);
+    const list = raw
+      .filter((r) => r.status === "active" && r.thumbnail)
+      .map(toProduct)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    if (!list.length) throw new Error("Empty catalog");
+    return list;
+  },
+  ["catalog-v1"],
+  { revalidate: 3600, tags: ["catalog"] },
 );
 
-export type Category = { slug: string; name: string; note: string; image: string };
+export async function getAllProducts(): Promise<Product[]> {
+  try {
+    return await cachedCatalog();
+  } catch (e) {
+    console.error("Catalog fetch failed", e);
+    return [];
+  }
+}
 
-export const categories: Category[] = [
-  { slug: "earbuds-audio", name: "Earbuds & audio", note: "ANC, TWS, neckbands", image: IMG + "1794125263-80d34935.jpeg" },
-  { slug: "smart-watches", name: "Smart watches", note: "Calling, fitness, AMOLED", image: IMG + "1794213577-8fca30e1.jpeg" },
-  { slug: "wrist-watches", name: "Wrist watches", note: "Titan, Fastrack, quartz", image: IMG + "wp-228944-b28516b79c.webp" },
-  { slug: "power-charging", name: "Power & charging", note: "Power banks, GaN chargers", image: IMG + "1789813090-d28d28ac.jpeg" },
-  { slug: "creator-gear", name: "Creator gear", note: "Mics, tripods, lights", image: IMG + "1793703245-aeddbea9.jpeg" },
-  { slug: "speakers", name: "Speakers", note: "Portable, party, soundbars", image: IMG + "1789293604-522d415b.jpeg" },
-  { slug: "home-kitchen", name: "Home & kitchen", note: "Cookers, fans, lamps", image: IMG + "1794638705-04d7a787.jpg" },
-  { slug: "grooming", name: "Grooming", note: "Clippers, dryers", image: IMG + "1793187075-225f3cd0.jpeg" },
-  { slug: "networking", name: "Networking", note: "Wi-Fi routers, mesh", image: IMG + "1793425400-dcbdf52c.jpeg" },
-];
+export async function getProduct(slug: string): Promise<ProductDetail | null> {
+  try {
+    const res = await fetch(`${FEED}/${encodeURIComponent(slug)}`, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const r = (json.data?.product ?? json.data) as Raw | undefined;
+    if (!r || r.status !== "active") return null;
+    return { ...toProduct(r), description: cleanHtml(r.description ?? "") };
+  } catch {
+    return null;
+  }
+}
 
-export const brands = ["Hoco", "QCY", "Baseus", "Anker", "Joyroom", "Fifine", "Maono", "Titan", "Fastrack", "Xiaomi", "Ugreen", "Kemei"];
+/** Strip scripts, styles, inline handlers and iframes from supplier HTML. */
+function cleanHtml(html: string): string {
+  return html
+    .replace(/<(script|style|iframe|object|embed)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<(script|iframe|object|embed)[^>]*\/?>/gi, "")
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, "")
+    .replace(/href\s*=\s*"javascript:[^"]*"/gi, 'href="#"')
+    .replace(/<a\s[^>]*href="https?:\/\/(?:www\.)?(?:dropshop|bdshop)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, "$1");
+}
 
-export const taka = (n: number) => "৳" + n.toLocaleString("en-IN");
-export const productUrl = (slug: string) => `${SITE}/product/${slug}/`;
-export const categoryUrl = (slug: string) => `${SITE}/category/${slug}/`;
+export async function getByCategory(slug: string) {
+  return (await getAllProducts()).filter((p) => p.category === slug);
+}
+
+export async function searchProducts(q: string) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  return (await getAllProducts()).filter((p) => {
+    const hay = `${p.name} ${p.brand} ${p.sku}`.toLowerCase();
+    return words.every((w) => hay.includes(w));
+  });
+}
+
+export type SortKey = "new" | "price-asc" | "price-desc";
+export function sortProducts(list: Product[], sort: SortKey) {
+  const l = [...list];
+  if (sort === "price-asc") l.sort((a, b) => a.price - b.price);
+  else if (sort === "price-desc") l.sort((a, b) => b.price - a.price);
+  return l;
+}
+
+/** Lightweight shape sent to the browser for product cards. */
+export type CardProduct = Pick<Product, "slug" | "name" | "brand" | "price" | "image" | "stock" | "createdAt"> & {
+  hover?: string;
+};
+export const toCard = (p: Product): CardProduct => ({
+  slug: p.slug,
+  name: p.name,
+  brand: p.brand,
+  price: p.price,
+  image: p.image,
+  stock: p.stock,
+  createdAt: p.createdAt,
+  hover: p.gallery.find((g) => g !== p.image),
+});

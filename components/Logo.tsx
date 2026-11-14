@@ -1,23 +1,21 @@
-// The FindMart mark: a market price tag with a punched hole, carrying an "f".
-export function LogoMark({ size = 36 }: { size?: number }) {
+export function LogoMark({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden>
-      <path d="M14 4h18a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14L4 20 14 4Z" fill="var(--marigold)" />
-      <circle cx="13" cy="20" r="2.6" fill="var(--paper)" />
-      <path
-        d="M28.5 12.5c-.6-.3-1.4-.5-2.3-.5-2.6 0-4.2 1.6-4.2 4.3V18h-2v3h2v9h3.6v-9h3v-3h-3v-1.4c0-1 .5-1.6 1.5-1.6.5 0 .9.1 1.3.3l.1-2.8Z"
-        fill="var(--ink)"
-      />
+      <rect width="40" height="40" rx="11" fill="var(--brand)" />
+      <path d="M11 15.5h18l-1.6 15.2a2 2 0 0 1-2 1.8H14.6a2 2 0 0 1-2-1.8L11 15.5Z" fill="var(--ink)" />
+      <path d="M15.5 15.5v-2a4.5 4.5 0 0 1 9 0v2" fill="none" stroke="var(--ink)" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M17.5 28V20.5h5.2M17.5 24h4.2" fill="none" stroke="var(--brand)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-export function Logo({ light = false }: { light?: boolean }) {
+export function Logo({ dark = false }: { dark?: boolean }) {
   return (
-    <span className={`logo${light ? " logo--light" : ""}`}>
+    <span className={`logo${dark ? " logo--dark" : ""}`}>
       <LogoMark />
-      <span className="logo__word">
-        findmart<span className="logo__bd">bd</span>
+      <span className="logo__type">
+        <span className="logo__name">FindMart</span>
+        <span className="logo__sub">Bangladesh</span>
       </span>
     </span>
   );
