@@ -110,7 +110,8 @@ export default async function Home() {
     };
   }).filter(Boolean) as StageSlide[];
 
-  const fresh = all.filter(inStock).sort(byNewest).slice(0, 10);
+  const TECH = new Set(["smart-watches", "earbuds-headphones", "speakers", "power-charging", "solar-power-backup", "creator-gear", "computer-networking", "watches"]);
+  const fresh = all.filter((p) => inStock(p) && TECH.has(p.category)).sort(byNewest).slice(0, 10);
   const budget = all.filter((p) => p.price <= 999 && inStock(p)).sort(byNewest).slice(0, 10);
 
   const bands = BANDS.map((slug) => {

@@ -490,12 +490,10 @@
 }
 .ai__peek img {
   position: absolute;
-  left: 50%;
+  left: 17%;
   top: 6%;
   width: 66%;
-  translate: -50% 0;
   mix-blend-mode: multiply;
-  animation: rise 0.6s var(--ease) both;
 }
 .ai__peek-t {
   position: relative;
@@ -568,12 +566,12 @@
 }
 .stage__ghost {
   position: absolute;
-  right: -1%;
-  bottom: 12%;
+  right: -2%;
+  bottom: 15%;
   z-index: -1;
   font-weight: 800;
   font-stretch: 125%;
-  font-size: clamp(120px, 21vw, 340px);
+  font-size: clamp(80px, 8.6vw, 150px);
   line-height: 0.8;
   letter-spacing: -0.05em;
   white-space: nowrap;
@@ -633,30 +631,39 @@
 .stage__item {
   position: absolute;
   display: block;
+}
+/* the wrapper (not the link) is blended, so white photo backgrounds melt into the stage colour */
+.stage__img {
+  display: block;
+  mix-blend-mode: multiply;
   animation: rise 0.85s var(--ease) both;
 }
-.stage__item img {
+.stage__img img {
   width: 100%;
   height: auto;
-  mix-blend-mode: multiply;
 }
 .stage__item--1 {
   width: 62%;
   left: 20%;
   top: 0;
-  z-index: 2;
-  animation-delay: 0.05s;
 }
 .stage__item--2 {
   width: 35%;
   left: 0;
   bottom: 2%;
-  animation-delay: 0.16s;
 }
 .stage__item--3 {
   width: 35%;
   right: 0;
   top: 22%;
+}
+.stage__item--1 .stage__img {
+  animation-delay: 0.05s;
+}
+.stage__item--2 .stage__img {
+  animation-delay: 0.16s;
+}
+.stage__item--3 .stage__img {
   animation-delay: 0.24s;
 }
 .stage__tag {
@@ -664,11 +671,13 @@
   left: 50%;
   bottom: 4%;
   translate: -50% 0;
+  z-index: 3;
   display: flex;
   align-items: baseline;
   gap: 8px;
   max-width: 94%;
   padding: 7px 14px;
+  animation: rise 0.85s var(--ease) 0.3s both;
   border-radius: 999px;
   background: #fff;
   color: var(--ink);
@@ -932,7 +941,7 @@
 }
 .band {
   display: grid;
-  grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
   align-items: center;
   gap: clamp(24px, 4vw, 64px);
   padding: clamp(28px, 3.6vw, 60px);
@@ -941,7 +950,9 @@
   background: var(--tint);
 }
 .band__name {
-  font-size: clamp(36px, 4.6vw, 68px);
+  font-size: clamp(34px, 3.5vw, 52px);
+  font-stretch: 112%;
+  overflow-wrap: break-word;
   color: var(--deep);
 }
 .band__blurb {
@@ -1226,7 +1237,6 @@ a.ft__line:hover {
 }
 .pg__open {
   position: relative;
-  z-index: 1;
   display: grid;
   place-items: center;
   width: 82%;

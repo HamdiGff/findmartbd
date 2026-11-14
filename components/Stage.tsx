@@ -57,8 +57,10 @@ export function Stage({ slides }: { slides: StageSlide[] }) {
         <div className="stage__art" key={`a-${s.slug}`}>
           {s.items.map((it, k) => (
             <Link key={it.slug} href={`/product/${it.slug}`} className={`stage__item stage__item--${k + 1}`} prefetch={false}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={it.image} alt={it.name} width={520} height={520} loading={i === 0 ? "eager" : "lazy"} />
+              <span className="stage__img">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={it.image} alt={it.name} width={520} height={520} loading={i === 0 ? "eager" : "lazy"} />
+              </span>
               <span className="stage__tag">
                 <b>{taka(it.price)}</b>
                 <span>{it.name}</span>
