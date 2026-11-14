@@ -2,7 +2,7 @@ import Link from "next/link";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { ProductRow } from "@/components/ProductRow";
 import { ProductCard } from "@/components/ProductCard";
-import { Arrow, CategoryIcon } from "@/components/Icons";
+import { Arrow, Cash, CategoryIcon, Return, Shield, Truck } from "@/components/Icons";
 import { CATEGORIES } from "@/lib/categories";
 import { getAllProducts, toCard, type Product } from "@/lib/catalog";
 import { taka } from "@/lib/format";
@@ -95,7 +95,62 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="block block--tight">
+        <div className="wrap">
+          <div className="circles">
+            {CATEGORIES.map((c) => {
+              const items = by(c.slug);
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/category/${c.slug}`}
+                  className="circle-cat"
+                  style={{ ["--tint" as string]: c.tint, ["--acc" as string]: c.accent }}
+                >
+                  <span className="circle-cat__img">
+                    {items[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={items[0].image} alt="" width={80} height={80} loading="lazy" />
+                    ) : (
+                      <CategoryIcon name={c.icon} size={30} />
+                    )}
+                  </span>
+                  <span>
+                    {c.short === "Audio" ? "Earbuds" : c.name.split(" & ")[0]}
+                    <small>{items.length} items</small>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="block block--tight">
+        <div className="wrap">
+          <div className="trust">
+            <div className="trust__item">
+              <span className="trust__ic"><Cash size={24} /></span>
+              <div><b>Cash on delivery</b><span>Open the parcel, then pay</span></div>
+            </div>
+            <div className="trust__item">
+              <span className="trust__ic"><Truck size={24} /></span>
+              <div><b>All 64 districts</b><span>Dhaka 1–2 days, others 2–4</span></div>
+            </div>
+            <div className="trust__item">
+              <span className="trust__ic"><Shield size={24} /></span>
+              <div><b>7-day warranty</b><span>Faulty items replaced</span></div>
+            </div>
+            <div className="trust__item">
+              <span className="trust__ic"><Return size={24} /></span>
+              <div><b>Easy returns</b><span>Simple return requests</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="block">
+        <div className="wrap block__head"><div><h2>Shop by category</h2><p className="block__sub">Pick a category to see everything in stock</p></div></div>
         <div className="wrap">
           <div className="tiles">
             {tiles.map((c) => (

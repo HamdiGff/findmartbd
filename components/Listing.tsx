@@ -12,7 +12,7 @@ const SORTS: [SortKey, string][] = [
 ];
 const PRICE_CAPS = [999, 2999, 4999];
 
-type Params = { sort?: string; page?: string; max?: string; q?: string };
+type Params = { sort?: string; page?: string; max?: string; q?: string; cat?: string };
 
 export function Listing({
   basePath,
@@ -45,7 +45,7 @@ export function Listing({
 
   const href = (over: Partial<Params>) => {
     const q = new URLSearchParams();
-    const merged = { q: params.q, sort, max: max ? String(max) : undefined, page: undefined, ...over };
+    const merged = { q: params.q, cat: params.cat, sort, max: max ? String(max) : undefined, page: undefined, ...over };
     for (const [k, v] of Object.entries(merged)) if (v && !(k === "sort" && v === "new") && !(k === "page" && v === "1")) q.set(k, String(v));
     const s = q.toString();
     return s ? `${basePath}?${s}` : basePath;
