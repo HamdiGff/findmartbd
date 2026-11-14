@@ -2524,13 +2524,8 @@ ul {
   .hact__item--account {
     display: none;
   }
-  .catbar__item {
-    min-width: 70px;
-    font-size: 11.5px;
-  }
-  .catbar__ic {
-    width: 40px;
-    height: 40px;
+  .catbar {
+    display: none;
   }
   .hero {
     padding-top: 12px;
