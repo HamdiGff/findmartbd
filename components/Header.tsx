@@ -13,9 +13,9 @@ export type CatMeta = { slug: string; count: number; image?: string };
 
 const PLACEHOLDERS = ["ANC earbuds", "smart watch", "power bank", "wireless mic", "Wi-Fi router", "MPPT controller"];
 const NOTICES = [
-  "Cash on delivery in all 64 districts — open the parcel, then pay",
+  "Cash on delivery in all 64 districts",
   "7-day replacement warranty on every product",
-  `Need help choosing? Call or WhatsApp ${PHONE}`,
+  `Need help? Call or WhatsApp ${PHONE}`,
 ];
 const NAV = [
   { href: "/", label: "Home" },
