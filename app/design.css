@@ -1697,6 +1697,7 @@ a.ft__line:hover {
   text-underline-offset: 3px;
 }
 .prose {
+  overflow-wrap: anywhere;
   max-width: 72ch;
   font-size: 16px;
   line-height: 1.72;
@@ -1728,7 +1729,9 @@ a.ft__line:hover {
   border-radius: 18px;
 }
 .prose table {
-  width: 100%;
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 14.5px;
 }
@@ -1859,14 +1862,14 @@ a.ft__line:hover {
     padding: 0 14px;
   }
   .band {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
   .band__strip {
     grid-auto-columns: calc((100% - 2 * 20px) / 3.2);
   }
   .how__in {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .pbody {
     grid-template-columns: 200px minmax(0, 1fr);
@@ -1926,13 +1929,13 @@ a.ft__line:hover {
     font-size: 16px;
   }
   .ai__body {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .ai__peek {
     display: none;
   }
   .stage__panel {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto auto;
     min-height: 0;
     border-radius: 30px;
@@ -1977,13 +1980,13 @@ a.ft__line:hover {
     grid-column: 1 / -1;
   }
   .pdp3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .pg {
     position: static;
   }
   .pbody {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0;
   }
   .rail {
@@ -2151,7 +2154,7 @@ a.ft__line:hover {
     margin-inline: -18px;
   }
   .dl3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .dl3 > div,
   .dl3 > div + div {
@@ -2163,7 +2166,7 @@ a.ft__line:hover {
     width: 42%;
   }
   .buy__alt {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .sbar__add span {
     display: none;
