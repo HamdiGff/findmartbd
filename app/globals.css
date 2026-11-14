@@ -1374,10 +1374,49 @@ p {
   .logo__word {
     font-size: 23px;
   }
-  .hero__stage {
-    height: 250px;
+  .hero__inner {
+    padding-top: 26px;
+  }
+  .hero h1 {
+    font-size: 34px;
+  }
+  .hero__lead {
+    font-size: 16.5px;
+    margin-top: 14px;
+  }
+  .hero__cta {
+    margin-top: 20px;
     gap: 10px;
-    padding-bottom: 40px;
+  }
+  .hero__cta .btn {
+    flex: 1 1 0;
+    min-height: 48px;
+    padding: 0 14px;
+    font-size: 15.5px;
+  }
+  .hero__proof {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+  .hero__stage {
+    height: 230px;
+    gap: 10px;
+    padding: 0 4px 40px;
+    margin: 0;
+  }
+  .plinth--1 img,
+  .plinth--2 img,
+  .plinth--3 img {
+    width: 100%;
+  }
+  .plinth--2 img {
+    width: 108%;
+  }
+  .plinth__tag {
+    right: -4px;
+  }
+  .plinth--2 .plinth__tag {
+    right: -8px;
   }
   .tag--lg {
     font-size: 16px;
@@ -1403,23 +1442,27 @@ p {
     padding-top: 48px;
   }
   .cats {
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
   .cat {
     min-height: 0;
     flex-direction: column-reverse;
-    align-items: flex-start;
-    padding: 14px;
+    align-items: center;
+    text-align: center;
+    padding: 12px 6px 14px;
+    gap: 8px;
   }
   .cat img {
-    width: 72px;
-    height: 72px;
+    width: 60px;
+    height: 60px;
   }
   .cat strong {
-    font-size: 17px;
+    font-size: 14px;
+    line-height: 1.2;
   }
   .cat small {
-    font-size: 13px;
+    display: none;
   }
   .grid {
     grid-template-columns: repeat(2, 1fr);
