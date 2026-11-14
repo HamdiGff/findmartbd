@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Arrow } from "./Icons";
+import { Arrow, Cash, Shield } from "./Icons";
 import { taka } from "@/lib/format";
 
 export type Slide = {
   kicker: string;
+  tab: string;
   title: string;
   text: string;
   href: string;
@@ -53,9 +54,20 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
             <Link href={s.href} className="btn btn--brand btn--lg" tabIndex={n === i ? 0 : -1}>
               {s.cta} <Arrow size={18} />
             </Link>
+            <ul className="hslide__perks">
+              <li>
+                <Cash size={16} /> Cash on delivery
+              </li>
+              <li>
+                <Shield size={16} /> 7-day warranty
+              </li>
+            </ul>
           </div>
           <div className="hslide__art">
             <span className="hslide__glow" aria-hidden />
+            <span className="hslide__orbit" aria-hidden>
+              <i />
+            </span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={s.image} alt={s.name} width={520} height={520} loading={n === 0 ? "eager" : "lazy"} />
             <span className="hslide__price">
@@ -65,18 +77,20 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           </div>
         </div>
       ))}
-      <div className="hslider__dots" role="tablist" aria-label="Choose slide">
+      <div className="htabs" role="tablist" aria-label="Choose slide" style={{ ["--n" as string]: slides.length }}>
         {slides.map((s, n) => (
           <button
             key={s.href}
             role="tab"
             aria-selected={n === i}
-            aria-label={`Show slide ${n + 1}`}
-            className="hslider__dot"
+            className="htab"
             data-on={n === i}
             onClick={() => setI(n)}
           >
-            <span style={{ animationPlayState: paused ? "paused" : "running" }} />
+            <span className="htab__bar">
+              <span style={{ animationPlayState: paused ? "paused" : "running" }} />
+            </span>
+            <span className="htab__label">{s.tab}</span>
           </button>
         ))}
       </div>

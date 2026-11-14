@@ -321,35 +321,49 @@ ul {
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 28px;
-  padding: 20px 0;
+  padding: 24px 0;
   transition: padding 0.3s var(--ease);
 }
 .header[data-scrolled="true"] .hmain {
   padding: 12px 0;
 }
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--brand);
+  transform: scaleX(var(--sp, 0));
+  transform-origin: 0 50%;
+  pointer-events: none;
+  z-index: 3;
+}
 .hmain .hmain__menu {
   display: none;
 }
 .hmain__logo .logo svg {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
 }
 .hmain__logo .logo__name {
-  font-size: 28px;
+  font-size: 31px;
 }
 .hmain__logo .logo__sub {
   font-size: 11px;
 }
 
 .hsearch {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 56px;
+  height: 62px;
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   justify-self: center;
-  padding: 4px;
-  border-radius: 16px;
+  padding: 5px;
+  border-radius: 20px;
   background: #fff;
   border: 2px solid var(--ink);
   transition: box-shadow 0.25s;
@@ -364,11 +378,11 @@ ul {
   width: auto;
   min-width: 150px;
   height: auto;
-  min-height: 44px;
+  min-height: 50px;
   line-height: 1.3;
-  padding: 0 34px 0 14px;
+  padding: 0 34px 0 16px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--soft)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23141414' stroke-width='2.6'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
     no-repeat right 12px center;
@@ -399,14 +413,14 @@ ul {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 44px;
-  padding: 0 22px;
+  height: 50px;
+  padding: 0 26px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 15px;
   background: var(--brand);
   color: var(--ink);
   font-weight: 800;
-  font-size: 14.5px;
+  font-size: 15px;
   transition: background 0.2s;
 }
 .hsearch__go:hover {
@@ -497,16 +511,16 @@ ul {
   display: flex;
   align-items: center;
   gap: 24px;
-  height: 56px;
+  height: 60px;
 }
 .hnav__all {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 42px;
-  padding: 0 18px;
+  height: 44px;
+  padding: 0 20px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--brand);
   color: var(--ink);
   font-weight: 800;
@@ -614,9 +628,9 @@ ul {
 }
 .mega__in {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 24px;
-  padding: 24px 0 28px;
+  grid-template-columns: minmax(0, 1fr) 200px 290px;
+  gap: 32px;
+  padding: 26px 0 30px;
 }
 .mega__grid {
   display: grid;
@@ -1035,7 +1049,7 @@ ul {
 }
 .hslider {
   position: relative;
-  min-height: 460px;
+  min-height: 510px;
   border-radius: var(--r-xl);
   overflow: hidden;
   isolation: isolate;
@@ -1047,7 +1061,7 @@ ul {
   grid-template-columns: 1.05fr 1fr;
   align-items: center;
   gap: 20px;
-  padding: 48px 56px 64px;
+  padding: 48px 56px 104px;
   color: #fff;
   opacity: 0;
   visibility: hidden;
@@ -1869,8 +1883,8 @@ ul {
 }
 .footer__grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
-  gap: 40px;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1.2fr;
+  gap: 36px;
   padding: 48px 0 36px;
 }
 .footer__about p {
@@ -3548,7 +3562,7 @@ body:has(.stickybuy[data-show="true"]) .fab--right {
     border-top: 1px solid #262626;
   }
   .footer__grid {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
   }
   .footer__about {
     grid-column: 1 / -1;
@@ -3668,7 +3682,7 @@ body:has(.stickybuy[data-show="true"]) .fab--right {
   .hslide {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
-    padding: 28px 24px 56px;
+    padding: 28px 22px 92px;
     gap: 6px;
   }
   .hslide__title {

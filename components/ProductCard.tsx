@@ -60,15 +60,19 @@ export function ProductCard({ p, priority = false }: { p: CardProduct; priority?
         <Link href={url} className="pcard__name" prefetch={false}>
           {p.name}
         </Link>
-        <div className="pcard__price">{taka(p.price)}</div>
-        <button
-          type="button"
-          className="btn btn--brand btn--block pcard__add"
-          disabled={p.stock < 1}
-          onClick={() => add({ slug: p.slug, name: p.name, price: p.price, image: p.image })}
-        >
-          <Cart size={17} /> Add to cart
-        </button>
+        <div className="pcard__foot">
+          <div className="pcard__price">{taka(p.price)}</div>
+          <button
+            type="button"
+            className="pcard__add"
+            aria-label={`Add ${p.name} to cart`}
+            disabled={p.stock < 1}
+            onClick={() => add({ slug: p.slug, name: p.name, price: p.price, image: p.image })}
+          >
+            <Cart size={17} />
+            <span>Add</span>
+          </button>
+        </div>
       </div>
     </article>
   );

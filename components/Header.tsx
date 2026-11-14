@@ -17,6 +17,13 @@ const NOTICES = [
   "7-day replacement warranty on every product",
   `Need help? Call or WhatsApp ${PHONE}`,
 ];
+const POPULAR = ["ANC earbuds", "Smart watch", "Power bank", "Wireless mic", "Wi-Fi router", "MPPT controller", "Solar light"];
+const BUDGETS = [
+  { label: "Under ৳500", href: "/shop?max=500" },
+  { label: "Under ৳1,000", href: "/shop?max=1000" },
+  { label: "Under ৳2,500", href: "/shop?max=2500" },
+  { label: "৳5,000 and above", href: "/shop?min=5000" },
+];
 const NAV = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop all" },
@@ -25,29 +32,54 @@ const NAV = [
   { href: "/category/power-charging", label: "Power banks" },
   { href: "/category/creator-gear", label: "Creator gear" },
   { href: "/category/solar-power-backup", label: "Solar & backup", hot: true },
+  { href: "/shop?max=999", label: "Under ৳999" },
 ];
 
-function SearchBox() {
+function SearchBox({ meta }: { meta: CatMeta[] }) {
   const router = useRouter();
   const params = useSearchParams();
+  const pathname = usePathname();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [cat, setCat] = useState(params.get("cat") ?? "");
   const [hint, setHint] = useState(0);
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const id = setInterval(() => setHint((h) => (h + 1) % PLACEHOLDERS.length), 2600);
     return () => clearInterval(id);
   }, []);
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: Event) => {
+      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", away);
+    window.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", away);
+      window.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+
+  const term = q.trim().toLowerCase();
+  const terms = term ? POPULAR.filter((t) => t.toLowerCase().includes(term)) : POPULAR;
+  const cats = (term ? CATEGORIES.filter((c) => c.name.toLowerCase().includes(term)) : CATEGORIES.slice(0, 6)).slice(0, 6);
 
   return (
     <form
+      ref={box}
       className="hsearch"
       role="search"
+      onFocus={() => setOpen(true)}
       onSubmit={(e) => {
         e.preventDefault();
-        const term = q.trim();
-        if (!term && cat) return router.push(`/category/${cat}`);
-        if (term) router.push(`/search?q=${encodeURIComponent(term)}${cat ? `&cat=${cat}` : ""}`);
+        const t = q.trim();
+        setOpen(false);
+        if (!t && cat) return router.push(`/category/${cat}`);
+        if (t) router.push(`/search?q=${encodeURIComponent(t)}${cat ? `&cat=${cat}` : ""}`);
       }}
     >
       <label htmlFor="hcat" className="sr-only">
@@ -77,38 +109,114 @@ function SearchBox() {
         <Search size={20} />
         <span>Search</span>
       </button>
+
+      <div className="hsearch__panel" data-open={open}>
+        {term && (
+          <Link href={`/search?q=${encodeURIComponent(q.trim())}`} className="hsearch__run" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>
+            <Search size={18} />
+            <span>
+              Search for <b>{q.trim()}</b>
+            </span>
+            <Arrow size={16} />
+          </Link>
+        )}
+        {terms.length > 0 && (
+          <>
+            <p className="hsearch__ph">{term ? "Suggestions" : "Popular searches"}</p>
+            <div className="hsearch__chips">
+              {terms.map((t) => (
+                <Link key={t} href={`/search?q=${encodeURIComponent(t)}`} onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>
+                  {t}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        {cats.length > 0 && (
+          <>
+            <p className="hsearch__ph">{term ? "Matching categories" : "Shop by category"}</p>
+            <ul className="hsearch__cats">
+              {cats.map((c) => {
+                const m = meta.find((x) => x.slug === c.slug);
+                return (
+                  <li key={c.slug}>
+                    <Link href={`/category/${c.slug}`} onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>
+                      <span className="hsearch__thumb" style={{ background: c.tint }}>
+                        {m?.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.image} alt="" width={40} height={40} loading="lazy" />
+                        ) : (
+                          <CategoryIcon name={c.icon} size={20} style={{ color: c.accent }} />
+                        )}
+                      </span>
+                      <span>
+                        {c.name}
+                        {m && <small>{m.count} products</small>}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </div>
     </form>
   );
 }
 
 function MegaMenu({ meta, open, onClose }: { meta: CatMeta[]; open: boolean; onClose: () => void }) {
+  const solar = meta.find((x) => x.slug === "solar-power-backup");
   return (
     <div className="mega" data-open={open} onMouseLeave={onClose}>
       <div className="wrap mega__in">
-        <ul className="mega__grid">
-          {CATEGORIES.map((c) => {
-            const m = meta.find((x) => x.slug === c.slug);
-            return (
-              <li key={c.slug}>
-                <Link href={`/category/${c.slug}`} className="mega__item" onClick={onClose} tabIndex={open ? 0 : -1}>
-                  <span className="mega__thumb" style={{ background: c.tint }}>
-                    {m?.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.image} alt="" width={64} height={64} loading="lazy" />
-                    ) : (
-                      <CategoryIcon name={c.icon} size={24} style={{ color: c.accent }} />
-                    )}
-                  </span>
-                  <span>
-                    <b>{c.name}</b>
-                    <small>{m ? `${m.count} products` : c.blurb}</small>
-                  </span>
+        <div>
+          <p className="mega__h">Shop by category</p>
+          <ul className="mega__grid">
+            {CATEGORIES.map((c) => {
+              const m = meta.find((x) => x.slug === c.slug);
+              return (
+                <li key={c.slug}>
+                  <Link href={`/category/${c.slug}`} className="mega__item" onClick={onClose} tabIndex={open ? 0 : -1}>
+                    <span className="mega__thumb" style={{ background: c.tint }}>
+                      {m?.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={m.image} alt="" width={64} height={64} loading="lazy" />
+                      ) : (
+                        <CategoryIcon name={c.icon} size={24} style={{ color: c.accent }} />
+                      )}
+                    </span>
+                    <span>
+                      <b>{c.name}</b>
+                      <small>{m ? `${m.count} products` : c.blurb}</small>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <div className="mega__budget">
+          <p className="mega__h">Shop by budget</p>
+          <ul>
+            {BUDGETS.map((b) => (
+              <li key={b.href}>
+                <Link href={b.href} onClick={onClose} tabIndex={open ? 0 : -1}>
+                  {b.label}
+                  <Arrow size={15} />
                 </Link>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+          <Link href="/shop?sort=new" className="mega__new" onClick={onClose} tabIndex={open ? 0 : -1}>
+            See new arrivals
+          </Link>
+        </div>
         <Link href="/category/solar-power-backup" className="mega__promo" onClick={onClose} tabIndex={open ? 0 : -1}>
+          {solar?.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={solar.image} alt="" width={120} height={120} loading="lazy" />
+          )}
           <span className="mega__promo-k">Load-shedding ready</span>
           <b>Solar &amp; power backup</b>
           <span>MPPT controllers, power stations and DC breakers</span>
@@ -137,8 +245,12 @@ export function Header({ meta }: { meta: CatMeta[] }) {
   useEffect(() => {
     const on = () => {
       setScrolled(window.scrollY > 40);
-      const el = document.querySelector(".header");
-      if (el) document.documentElement.style.setProperty("--hb", `${Math.round(el.getBoundingClientRect().bottom)}px`);
+      const el = document.querySelector<HTMLElement>(".header");
+      if (el) {
+        document.documentElement.style.setProperty("--hb", `${Math.round(el.getBoundingClientRect().bottom)}px`);
+        const room = document.documentElement.scrollHeight - window.innerHeight;
+        el.style.setProperty("--sp", room > 0 ? String(Math.min(1, window.scrollY / room)) : "0");
+      }
     };
     on();
     window.addEventListener("scroll", on, { passive: true });
@@ -190,7 +302,7 @@ export function Header({ meta }: { meta: CatMeta[] }) {
             <Logo />
           </Link>
           <Suspense fallback={<div className="hsearch" />}>
-            <SearchBox />
+            <SearchBox meta={meta} />
           </Suspense>
           <a href={`tel:${PHONE_INTL}`} className="hotline">
             <span className="hotline__ic">

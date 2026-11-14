@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { ProductRow } from "@/components/ProductRow";
 import { ProductCard } from "@/components/ProductCard";
+import { BackupPlanner } from "@/components/BackupPlanner";
 import { Arrow, Cash, CategoryIcon, Return, Shield, Truck } from "@/components/Icons";
 import { CATEGORIES } from "@/lib/categories";
 import { getAllProducts, toCard, type Product } from "@/lib/catalog";
@@ -25,6 +26,7 @@ export default async function Home() {
   const slides: Slide[] = [
     audio.length && {
       kicker: "New in audio",
+      tab: "Audio",
       title: "Hear more. Hear less noise.",
       text: "Active noise cancelling earbuds from QCY, CMF, Acefast and Hoco, delivered with cash on delivery.",
       href: "/category/earbuds-headphones",
@@ -34,6 +36,7 @@ export default async function Home() {
     },
     smart.length && {
       kicker: "Smart watches",
+      tab: "Watches",
       title: "Calls, steps and sleep on your wrist.",
       text: "Bluetooth calling, AMOLED screens and week-long battery life, starting at a price that makes sense.",
       href: "/category/smart-watches",
@@ -43,6 +46,7 @@ export default async function Home() {
     },
     creator.length && {
       kicker: "For creators",
+      tab: "Creators",
       title: "Studio sound from your bedroom.",
       text: "USB, XLR and wireless mics for YouTube, Facebook Live, gaming and online classes.",
       href: "/category/creator-gear",
@@ -61,6 +65,35 @@ export default async function Home() {
     .filter((c) => c.count > 0);
 
   const budget = all.filter((p) => p.price <= 999 && p.stock > 0).slice(0, 10);
+
+  const inStock = all.filter((p) => p.stock > 0);
+  const mix = (items: Product[]) => {
+    const seen = new Set<string>();
+    const out: Product[] = [];
+    for (const p of items) {
+      if (seen.has(p.category)) continue;
+      seen.add(p.category);
+      out.push(p);
+      if (out.length === 3) break;
+    }
+    return out;
+  };
+  const bands = [
+    { big: "৳500", lead: "Under", href: "/shop?max=500", from: 0, to: 500, tone: "mint" },
+    { big: "৳1,000", lead: "Under", href: "/shop?max=1000", from: 500, to: 1000, tone: "sun" },
+    { big: "৳2,500", lead: "Under", href: "/shop?max=2500", from: 1000, to: 2500, tone: "sky" },
+    { big: "৳5,000+", lead: "Premium picks", href: "/shop?min=5000", from: 4999, to: Infinity, tone: "ink" },
+  ].map((b) => {
+    const within = inStock.filter((p) => (b.lead === "Under" ? p.price <= b.to : p.price >= 5000));
+    const band = inStock.filter((p) => p.price > b.from && p.price <= b.to);
+    return { ...b, count: within.length, imgs: mix(band.length >= 3 ? band : within) };
+  });
+
+  const gear = [...solar]
+    .filter((p) => p.stock > 0)
+    .sort((a, b) => Number(/power station|lifepo4|battery|inverter|ips/i.test(b.name)) - Number(/power station|lifepo4|battery|inverter|ips/i.test(a.name)))
+    .slice(0, 3)
+    .map((p) => ({ slug: p.slug, name: shortName(p.name), price: p.price, image: p.image }));
   const studioPicks = creator.slice(0, 4);
 
   return (
@@ -184,32 +217,31 @@ export default async function Home() {
       <section className="block">
         <div className="wrap">
           <div className="block__head">
-            <h2>Browse all categories</h2>
+            <div>
+              <h2>Shop by budget</h2>
+              <p className="block__sub">Pick a price and see what is in stock</p>
+            </div>
             <Link href="/shop" className="seeall">
               See all products <Arrow size={16} />
             </Link>
           </div>
-          <div className="chips">
-            {CATEGORIES.map((c) => {
-              const first = by(c.slug)[0];
-              return (
-                <Link
-                  key={c.slug}
-                  href={`/category/${c.slug}`}
-                  className="chip"
-                  style={{ ["--tint" as string]: c.tint }}
-                >
-                  <span className="chip__txt">
-                    <b>{c.name}</b>
-                    <small>{by(c.slug).length} items</small>
-                  </span>
-                  {first && (
+          <div className="budget">
+            {bands.map((b) => (
+              <Link key={b.big} href={b.href} className={`bcard bcard--${b.tone}`}>
+                <span className="bcard__lead">{b.lead}</span>
+                <span className="bcard__big">{b.big}</span>
+                <span className="bcard__count">{b.count.toLocaleString("en-IN")} products in stock</span>
+                <span className="bcard__imgs" aria-hidden>
+                  {b.imgs.map((p) => (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={first.image} alt="" width={56} height={56} loading="lazy" />
-                  )}
-                </Link>
-              );
-            })}
+                    <img key={p.slug} src={p.image} alt="" width={96} height={96} loading="lazy" />
+                  ))}
+                </span>
+                <span className="bcard__go">
+                  <Arrow size={18} />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -250,22 +282,7 @@ export default async function Home() {
       {sideB && (
         <section className="block">
           <div className="wrap">
-            <Link href="/category/solar-power-backup" className="banner">
-              <div className="banner__copy">
-                <span className="banner__kicker">Solar &amp; power backup</span>
-                <h2>Keep the lights on through load-shedding</h2>
-                <p>MPPT charge controllers, portable power stations, DC breakers and solar-ready appliances.</p>
-                <span className="btn btn--brand btn--lg">
-                  Shop solar <Arrow size={18} />
-                </span>
-              </div>
-              <div className="banner__art">
-                {solar.slice(0, 3).map((p) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={p.slug} src={p.image} alt="" width={220} height={220} loading="lazy" />
-                ))}
-              </div>
-            </Link>
+            <BackupPlanner gear={gear} />
           </div>
         </section>
       )}
@@ -304,6 +321,36 @@ export default async function Home() {
               ),
             )}
           </div>
+        </div>
+      </section>
+      <section className="block">
+        <div className="wrap">
+          <div className="block__head">
+            <div>
+              <h2>How ordering works</h2>
+              <p className="block__sub">You pay only when the parcel is in your hands</p>
+            </div>
+            <Link href="/track-order" className="seeall">
+              Track an order <Arrow size={16} />
+            </Link>
+          </div>
+          <ol className="steps">
+            <li>
+              <span className="steps__n">1</span>
+              <h3>Choose your gadgets</h3>
+              <p>Add items to the cart and enter your name, phone number and address. You pay nothing now.</p>
+            </li>
+            <li>
+              <span className="steps__n">2</span>
+              <h3>We call to confirm</h3>
+              <p>We phone you to check the address and delivery time. The parcel leaves only after you say yes.</p>
+            </li>
+            <li>
+              <span className="steps__n">3</span>
+              <h3>Check, then pay the rider</h3>
+              <p>Open the parcel in front of the rider. Pay in cash only if the product is right.</p>
+            </li>
+          </ol>
         </div>
       </section>
     </>

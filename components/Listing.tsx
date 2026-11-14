@@ -11,8 +11,9 @@ const SORTS: [SortKey, string][] = [
   ["price-desc", "Price: high to low"],
 ];
 const PRICE_CAPS = [999, 2999, 4999];
+const PRICE_FLOOR = 5000;
 
-type Params = { sort?: string; page?: string; max?: string; q?: string; cat?: string };
+type Params = { sort?: string; page?: string; max?: string; min?: string; q?: string; cat?: string };
 
 export function Listing({
   basePath,
@@ -37,15 +38,18 @@ export function Listing({
 }) {
   const sort = (SORTS.find(([k]) => k === params.sort)?.[0] ?? "new") as SortKey;
   const max = Number(params.max) || 0;
-  const filtered = max ? products.filter((p) => p.price <= max) : products;
+  const min = Number(params.min) || 0;
+  const filtered = products.filter((p) => (!max || p.price <= max) && (!min || p.price >= min));
   const list = sortProducts(filtered, sort);
   const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
   const page = Math.min(pages, Math.max(1, Number(params.page) || 1));
   const shown = list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
+  const thumbs = products.filter((p) => p.stock > 0).slice(0, 3);
+
   const href = (over: Partial<Params>) => {
     const q = new URLSearchParams();
-    const merged = { q: params.q, cat: params.cat, sort, max: max ? String(max) : undefined, page: undefined, ...over };
+    const merged = { q: params.q, cat: params.cat, sort, max: max ? String(max) : undefined, min: min ? String(min) : undefined, page: undefined, ...over };
     for (const [k, v] of Object.entries(merged)) if (v && !(k === "sort" && v === "new") && !(k === "page" && v === "1")) q.set(k, String(v));
     const s = q.toString();
     return s ? `${basePath}?${s}` : basePath;
@@ -69,10 +73,29 @@ export function Listing({
             <CategoryIcon name={icon} size={26} />
           </span>
         )}
-        <div>
+        <div className="lhead__copy">
           <h1>{title}</h1>
           {subtitle && <p>{subtitle}</p>}
+          {products.length > 0 && (
+            <ul className="lhead__stats">
+              <li>
+                <b>{products.length.toLocaleString("en-IN")}</b> products
+              </li>
+              <li>
+                From <b>{taka(Math.min(...products.map((p) => p.price)))}</b>
+              </li>
+              <li>Cash on delivery</li>
+            </ul>
+          )}
         </div>
+        {icon && thumbs.length > 0 && (
+          <div className="lhead__art" aria-hidden>
+            {thumbs.map((p) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={p.slug} src={p.image} alt="" width={120} height={120} loading="eager" />
+            ))}
+          </div>
+        )}
       </header>
 
       <div className="toolbar">
@@ -89,13 +112,20 @@ export function Listing({
           {PRICE_CAPS.map((cap) => (
             <Link
               key={cap}
-              href={href({ max: max === cap ? undefined : String(cap) })}
-              className={`pill${max === cap ? " is-on" : ""}`}
+              href={href({ max: max === cap ? undefined : String(cap), min: undefined })}
+              className={`pill${max === cap && !min ? " is-on" : ""}`}
               scroll={false}
             >
               Under {taka(cap)}
             </Link>
           ))}
+          <Link
+            href={href({ min: min === PRICE_FLOOR ? undefined : String(PRICE_FLOOR), max: undefined })}
+            className={`pill${min === PRICE_FLOOR ? " is-on" : ""}`}
+            scroll={false}
+          >
+            {taka(PRICE_FLOOR)} and above
+          </Link>
         </div>
       </div>
 

@@ -14,6 +14,23 @@ const perks = [
 export function Footer() {
   return (
     <footer className="footer">
+      <div className="fcta">
+        <div className="wrap fcta__in">
+          <div>
+            <h2>Not sure which one to buy?</h2>
+            <p>Tell us your budget and what you need. We will suggest a few options that fit.</p>
+          </div>
+          <div className="fcta__btns">
+            <a href={WHATSAPP} className="btn btn--dark btn--lg">
+              <Whatsapp size={20} /> Chat on WhatsApp
+            </a>
+            <a href={`tel:${PHONE_INTL}`} className="btn btn--lg fcta__call">
+              <Phone size={18} /> {PHONE}
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="perks">
         <div className="wrap perks__in">
           {perks.map((p) => (
@@ -45,11 +62,21 @@ export function Footer() {
         <div>
           <h3>Categories</h3>
           <ul>
-            {CATEGORIES.slice(0, 6).map((c) => (
+            {CATEGORIES.slice(0, 7).map((c) => (
               <li key={c.slug}>
                 <Link href={`/category/${c.slug}`}>{c.name}</Link>
               </li>
             ))}
+          </ul>
+        </div>
+        <div>
+          <h3>Shop by budget</h3>
+          <ul>
+            <li><Link href="/shop?max=500">Under ৳500</Link></li>
+            <li><Link href="/shop?max=1000">Under ৳1,000</Link></li>
+            <li><Link href="/shop?max=2500">Under ৳2,500</Link></li>
+            <li><Link href="/shop?min=5000">৳5,000 and above</Link></li>
+            <li><Link href="/shop?sort=new">New arrivals</Link></li>
           </ul>
         </div>
         <div>
