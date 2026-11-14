@@ -22,6 +22,8 @@ const promises = [
   { icon: <ReturnIcon />, title: "Easy returns", text: "Request a return from your account." },
 ];
 
+const heroLabels = ["QCY MeloBuds N65", "Titan Urban Edge", "Hoco DS89 speaker"];
+
 const steps = [
   { title: "Place your order", text: "Add products to your cart and check out with your name, phone and address. No advance payment." },
   { title: "We call to confirm", text: "Our team calls within a few hours to confirm the order and the delivery charge." },
@@ -60,9 +62,7 @@ export default function Home() {
                   <span className="plinth__string" aria-hidden />
                   <PriceTag price={p.price} size="lg" />
                 </span>
-                <span className="plinth__name">
-                  {p.brand} {p.name.split(",")[0]}
-                </span>
+                <span className="plinth__name">{heroLabels[i]}</span>
               </a>
             ))}
             <div className="hero__board" aria-hidden />

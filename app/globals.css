@@ -129,7 +129,7 @@ p {
 .site-header {
   background: var(--white);
   position: sticky;
-  top: 0;
+  top: -38px;
   z-index: 40;
   box-shadow: 0 1px 0 var(--line);
 }
@@ -524,7 +524,7 @@ p {
 /* The shelf scene */
 .hero__stage {
   position: relative;
-  height: 470px;
+  height: 440px;
   display: grid;
   grid-template-columns: 1fr 1.15fr 1fr;
   align-items: end;
@@ -534,9 +534,9 @@ p {
 .hero__stage::before {
   content: "";
   position: absolute;
-  inset: 40px -40px 0 0;
+  inset: 20px -40px 0 -10px;
   background: var(--green-tint);
-  border-radius: 260px 260px 0 0;
+  border-radius: 240px 240px 0 0;
   z-index: 0;
 }
 .hero__board {
@@ -572,7 +572,12 @@ p {
   transform: translateY(-6px);
 }
 .plinth--2 img {
-  width: 112%;
+  width: 116%;
+  max-width: none;
+}
+.plinth--1 img,
+.plinth--3 img {
+  width: 108%;
   max-width: none;
 }
 .plinth--1 {
@@ -1332,19 +1337,23 @@ p {
   .solar img {
     max-width: 260px;
   }
-  .steps {
-    grid-template-columns: 1fr;
-  }
-  .step + .step {
-    border-left: 0;
-    border-top: 1px dashed var(--line);
-  }
+
   .brands__list {
     grid-template-columns: repeat(3, 1fr);
   }
   .help__inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .step + .step {
+    border-left: 0;
+    border-top: 1px dashed var(--line);
   }
 }
 

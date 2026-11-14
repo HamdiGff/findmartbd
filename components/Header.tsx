@@ -57,7 +57,7 @@ export function Header() {
           <a href={SITE + "/cart/"} className="action">
             <BagIcon />
             <span className="action__label">Cart</span>
-            <span className="badge badge--cart" key={count} data-bump={count > 0}>{count}</span>
+            {count > 0 && <span className="badge badge--cart" key={count} data-bump="true">{count}</span>}
           </a>
         </nav>
       </div>
