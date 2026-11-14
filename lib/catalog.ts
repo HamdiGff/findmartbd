@@ -168,7 +168,6 @@ export function sortProducts(list: Product[], sort: SortKey) {
 /** Lightweight shape sent to the browser for product cards. */
 export type CardProduct = Pick<Product, "slug" | "name" | "brand" | "price" | "image" | "stock" | "createdAt"> & {
   hover?: string;
-  category?: string;
 };
 export const toCard = (p: Product): CardProduct => ({
   slug: p.slug,
@@ -179,7 +178,6 @@ export const toCard = (p: Product): CardProduct => ({
   stock: p.stock,
   createdAt: p.createdAt,
   hover: p.gallery.find((g) => g !== p.image),
-  category: p.category,
 });
 
 const strip = (h: string) =>

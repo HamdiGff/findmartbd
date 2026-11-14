@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
-import "./design.css";
 import { CartProvider } from "@/components/CartProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";

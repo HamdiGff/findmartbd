@@ -1,29 +1,51 @@
 import Link from "next/link";
-import { LogoMark } from "./Logo";
-import { Facebook, Instagram, Phone, Pin, Whatsapp, Youtube } from "./Icons";
+import { Logo } from "./Logo";
+import { Cash, Facebook, Instagram, Phone, Pin, Return, Shield, Truck, Whatsapp, Youtube } from "./Icons";
 import { CATEGORIES } from "@/lib/categories";
 import { PHONE, PHONE_INTL, WHATSAPP } from "@/lib/format";
 
+const perks = [
+  { icon: <Cash size={26} />, t: "Cash on delivery", d: "Pay after you check the parcel" },
+  { icon: <Truck size={26} />, t: "Delivery in 1–4 days", d: "To all 64 districts" },
+  { icon: <Shield size={26} />, t: "7-day warranty", d: "Replacement for faulty items" },
+  { icon: <Return size={26} />, t: "Easy returns", d: "Simple return requests" },
+];
+
 export function Footer() {
   return (
-    <footer className="ft">
-      <div className="wrap ft__grid">
-        <div className="ft__about">
-          <p className="disp ft__lead">Gadgets you can check before you pay.</p>
-          <a href={`tel:${PHONE_INTL}`} className="ft__line">
-            <Phone size={18} /> {PHONE}
+    <footer className="footer">
+      <div className="perks">
+        <div className="wrap perks__in">
+          {perks.map((p) => (
+            <div key={p.t} className="perk">
+              <span className="perk__ic">{p.icon}</span>
+              <div>
+                <b>{p.t}</b>
+                <span>{p.d}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="wrap footer__grid">
+        <div className="footer__about">
+          <Logo dark />
+          <p>
+            Gadgets and everyday tech at fair prices, delivered anywhere in Bangladesh. Open the parcel, check it, then
+            pay the rider.
+          </p>
+          <a href={`tel:${PHONE_INTL}`} className="footer__line">
+            <Phone size={17} /> {PHONE}
           </a>
-          <a href={WHATSAPP} className="ft__line" target="_blank" rel="noopener">
-            <Whatsapp size={18} /> WhatsApp us
-          </a>
-          <p className="ft__line">
-            <Pin size={18} /> Munshipara, Gaibandha 5700
+          <p className="footer__line">
+            <Pin size={17} /> Munshipara, Gaibandha 5700
           </p>
         </div>
         <div>
-          <h3>Aisles</h3>
+          <h3>Categories</h3>
           <ul>
-            {CATEGORIES.slice(0, 7).map((c) => (
+            {CATEGORIES.slice(0, 6).map((c) => (
               <li key={c.slug}>
                 <Link href={`/category/${c.slug}`}>{c.name}</Link>
               </li>
@@ -41,25 +63,24 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h3>Follow</h3>
-          <div className="ft__social">
+          <h3>Follow us</h3>
+          <div className="footer__social">
             <a href="https://www.facebook.com/" aria-label="Facebook"><Facebook /></a>
             <a href="https://www.instagram.com/" aria-label="Instagram"><Instagram /></a>
             <a href="https://www.youtube.com/" aria-label="YouTube"><Youtube /></a>
+            <a href={WHATSAPP} aria-label="WhatsApp"><Whatsapp size={18} /></a>
           </div>
-          <h3 className="ft__h3b">Payment</h3>
-          <p className="ft__pay">Cash on delivery. bKash and Nagad are coming soon.</p>
+          <h3 className="footer__h3b">We accept</h3>
+          <div className="footer__pay">
+            <span>Cash on delivery</span>
+            <span className="is-soon">bKash · Nagad soon</span>
+          </div>
         </div>
       </div>
-      <div className="ft__mark" aria-hidden>
-        <LogoMark size={120} />
-        <span className="disp">FindMart</span>
-      </div>
-      <div className="wrap ft__base">
-        <p>© 2026 FindMart BD. All rights reserved.</p>
+      <div className="wrap footer__base">
+        <p>© 2026 FindMart Bangladesh. All rights reserved.</p>
         <p>
-          <Link href="/page/privacy">Privacy</Link>
-          <Link href="/page/terms">Terms</Link>
+          <Link href="/page/privacy">Privacy</Link> · <Link href="/page/terms">Terms</Link>
         </p>
       </div>
     </footer>
