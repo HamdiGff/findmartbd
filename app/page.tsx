@@ -74,7 +74,7 @@ export default async function Home() {
                 <div>
                   <span className="hcard__kicker">Never run out</span>
                   <h2>Power banks and fast chargers</h2>
-                  <span className="hcard__from">From {taka(minPrice("power-charging"))}</span>
+                  <span className="hcard__from">From {taka(Math.min(...power.filter((p) => /power bank/i.test(p.name)).map((p) => p.price), sideA.price))}</span>
                 </div>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={sideA.image} alt={sideA.name} width={220} height={220} />

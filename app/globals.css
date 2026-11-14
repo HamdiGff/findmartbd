@@ -260,7 +260,7 @@ ul {
   position: sticky;
   top: -34px;
   z-index: 50;
-  background: rgb(255 255 255 / 0.88);
+  background: rgb(255 255 255 / 0.97);
   backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid var(--line);
@@ -764,16 +764,17 @@ ul {
 }
 .hslide__price {
   position: absolute;
-  right: 4%;
-  bottom: 12%;
+  right: 0;
+  bottom: 6%;
   display: flex;
   flex-direction: column;
   padding: 10px 16px;
   border-radius: 16px;
-  background: rgb(255 255 255 / 0.14);
-  border: 1px solid rgb(255 255 255 / 0.22);
+  background: rgb(12 14 28 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.18);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 16px 30px -12px rgb(0 0 0 / 0.6);
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -1573,7 +1574,7 @@ ul {
   z-index: 45;
 }
 .fab--left {
-  left: 20px;
+  right: 20px;
   bottom: 20px;
   display: grid;
   gap: 12px;
@@ -1581,7 +1582,7 @@ ul {
 .fab--right {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 82px;
   z-index: 45;
   opacity: 0;
   transform: translateY(10px);
@@ -1618,6 +1619,9 @@ ul {
 .fab__btn--brand {
   background: var(--brand);
   color: var(--ink);
+}
+.fab--left .fab__btn--dark {
+  display: none;
 }
 .fab__btn .dot {
   top: -3px;
@@ -2700,15 +2704,12 @@ ul {
     gap: 28px;
   }
   .fab--left {
-    left: 14px;
+    right: 14px;
     bottom: 14px;
-  }
-  .fab--left .fab__btn--dark {
-    display: none;
   }
   .fab--right {
     right: 14px;
-    bottom: 14px;
+    bottom: 72px;
   }
   .fab__btn {
     width: 46px;
