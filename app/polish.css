@@ -1042,3 +1042,52 @@
     font-size: 12px;
   }
 }
+
+/* ---------- Back-to-top button stays pinned to the screen ---------- */
+.fab__btn.fab--right {
+  position: fixed;
+}
+
+/* ---------- Small-screen fixes ---------- */
+@media (max-width: 760px) {
+  .hslider {
+    min-height: 590px;
+  }
+  .hslide {
+    padding-bottom: 88px;
+  }
+  .hslide__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hslide__art img {
+    width: 176px;
+  }
+  .hslide__price {
+    bottom: 0;
+  }
+  .bcard__imgs img:nth-child(3) {
+    display: none;
+  }
+  .planner__list {
+    gap: 8px;
+  }
+  .planner__list li {
+    padding: 8px 12px;
+  }
+  .planner__hours {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .planner__hl {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .planner__hours button {
+    padding: 10px 0;
+    font-size: 12.5px;
+  }
+}

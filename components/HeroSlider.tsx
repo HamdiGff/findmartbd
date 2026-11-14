@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Arrow, Cash, Shield } from "./Icons";
+import { Arrow } from "./Icons";
 import { taka } from "@/lib/format";
 
 export type Slide = {
@@ -54,14 +54,6 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
             <Link href={s.href} className="btn btn--brand btn--lg" tabIndex={n === i ? 0 : -1}>
               {s.cta} <Arrow size={18} />
             </Link>
-            <ul className="hslide__perks">
-              <li>
-                <Cash size={16} /> Cash on delivery
-              </li>
-              <li>
-                <Shield size={16} /> 7-day warranty
-              </li>
-            </ul>
           </div>
           <div className="hslide__art">
             <span className="hslide__glow" aria-hidden />

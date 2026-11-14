@@ -67,6 +67,7 @@ export default async function Home() {
   const budget = all.filter((p) => p.price <= 999 && p.stock > 0).slice(0, 10);
 
   const inStock = all.filter((p) => p.stock > 0);
+  const gadgets = all.filter((p) => p.category !== "home-kitchen" && p.category !== "personal-care");
   const mix = (items: Product[]) => {
     const seen = new Set<string>();
     const out: Product[] = [];
@@ -246,7 +247,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <ProductRow title="New arrivals" href="/shop?sort=new" products={all.slice(0, 12).map(toCard)} />
+      <ProductRow title="New arrivals" href="/shop?sort=new" products={gadgets.slice(0, 12).map(toCard)} />
 
       {studioPicks.length === 4 && (
         <section className="block">
